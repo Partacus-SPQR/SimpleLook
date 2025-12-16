@@ -4,7 +4,10 @@ import com.simplelook.FreeLookHandler;
 import com.simplelook.SimpleLookClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
+//? if >=1.21.11
 import net.minecraft.world.World;
+//? if <1.21.11
+/*import net.minecraft.world.BlockView;*/
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,8 +34,13 @@ public abstract class CameraMixin {
      * Inject at the end of the update method to apply free look offset
      */
     @Inject(method = "update", at = @At("RETURN"))
+    //? if >=1.21.11 {
     private void onCameraUpdate(World area, Entity focusedEntity, boolean thirdPerson, 
                                  boolean inverseView, float tickDelta, CallbackInfo ci) {
+    //?} else {
+    /*private void onCameraUpdate(BlockView area, Entity focusedEntity, boolean thirdPerson, 
+                                 boolean inverseView, float tickDelta, CallbackInfo ci) {*/
+    //?}
         // Check if mod is enabled
         var config = SimpleLookClient.getInstance().getConfig();
         if (!config.enabled) {

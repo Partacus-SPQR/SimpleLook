@@ -2,7 +2,7 @@
 
 **Look around freely while moving - inspired by Rust's free look feature.**
 
-The keybind is **unbound by default**. Go to **Options > Controls > Key Binds > SimpleLook** and bind a key (we recommend **Left Alt**). Then hold the key and glance around without changing your movement direction. Works while running, flying, swimming, and more.
+The keybind is **unbound by default**. Go to **Options > Controls > Key Binds > SimpleLook** and bind a key (we recommend **Left Alt**). Then hold the key and glance around without changing your movement direction. Works while running, flying, swimming, riding mounts, and more.
 
 ## Features
 
@@ -11,7 +11,7 @@ The keybind is **unbound by default**. Go to **Options > Controls > Key Binds > 
 - **Customizable Binding** - Rebind to any key or mouse button
 - **Hold or Toggle Mode** - Your choice of activation style
 - **Configurable Limits** - Set max horizontal/vertical angles
-- **Works Everywhere** - Running, elytra, swimming, riding
+- **Works Everywhere** - Running, elytra, swimming, riding (horses, pigs, striders, happy ghasts)
 
 ## How to Use
 
@@ -28,7 +28,7 @@ The keybind is **unbound by default**. Go to **Options > Controls > Key Binds > 
 | Max Yaw | 135 degrees | 10-180 degrees |
 | Max Pitch | 90 degrees | 10-90 degrees |
 | Return Speed | 25% | 1-100% |
-| Smoothing | 30% | 0-100% |
+| Smoothing | 20% | 0-100% (lower = faster) |
 | Toggle Mode | Off | On/Off |
 
 *Access via Mod Menu (recommended)*
@@ -37,9 +37,9 @@ The keybind is **unbound by default**. Go to **Options > Controls > Key Binds > 
 
 | Minecraft | Mod Version | Fabric Loader |
 |-----------|-------------|---------------|
-| 1.21.11 | 1.0.0 | 0.18.2 or higher |
-| 1.21.10 | 1.0.0 | 0.18.2 or higher |
-| 1.21.9 | 1.0.0 | 0.18.2 or higher |
+| 1.21.11 | 1.0.0 | 0.16.0 or higher |
+| 1.21.10 | 1.0.0 | 0.16.0 or higher |
+| 1.21.9 | 1.0.0 | 0.16.0 or higher |
 
 ## Dependencies
 

@@ -24,7 +24,7 @@ SimpleLook allows you to glance around without changing your movement direction.
 - **Hold or Toggle Mode** - Choose between holding the key or pressing once to toggle
 - **Configurable Limits** - Set maximum horizontal and vertical look angles
 - **Adjustable Speed** - Configure how fast the camera returns to center
-- **Works Everywhere** - Use while running, walking, swimming, flying, or riding
+- **Works Everywhere** - Use while running, walking, swimming, flying with elytra, or riding mounts (horses, pigs, striders, happy ghasts, and more)
 
 ---
 
@@ -52,7 +52,7 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 | **Max Yaw** | 135 degrees | Maximum horizontal look angle |
 | **Max Pitch** | 90 degrees | Maximum vertical look angle |
 | **Return Speed** | 25% | How fast the camera returns to center |
-| **Smoothing** | 30% | Camera movement smoothing factor |
+| **Smoothing** | 20% | Camera movement smoothing (lower = faster turning) |
 | **Toggle Mode** | Off | Use toggle instead of hold |
 
 ---
@@ -71,9 +71,9 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 
 | Minecraft | Mod Version | Fabric Loader |
 |-----------|-------------|---------------|
-| 1.21.11 | 1.0.0 | 0.18.2 or higher |
-| 1.21.10 | 1.0.0 | 0.18.2 or higher |
-| 1.21.9 | 1.0.0 | 0.18.2 or higher |
+| 1.21.11 | 1.0.0 | 0.16.0 or higher |
+| 1.21.10 | 1.0.0 | 0.16.0 or higher |
+| 1.21.9 | 1.0.0 | 0.16.0 or higher |
 
 ---
 
@@ -98,6 +98,9 @@ A: No. It is purely visual. Your character still faces the direction you are mov
 
 **Q: Can I use this while flying with elytra?**  
 A: Yes. It works with all movement types including elytra flight, swimming, and riding.
+
+**Q: Does it work while riding mounts?**  
+A: Yes. It works with all rideable entities including horses, pigs, striders, happy ghasts, and any other mounts.
 
 **Q: Is this like the free look in Rust?**  
 A: Exactly. It is inspired by Rust's free look feature that lets you look around while sprinting.

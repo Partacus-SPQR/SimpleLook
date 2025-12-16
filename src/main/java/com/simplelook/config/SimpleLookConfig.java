@@ -28,7 +28,7 @@ public class SimpleLookConfig {
     public int returnSpeed = 25;
     
     /** Camera smoothing factor (0-100) */
-    public int smoothing = 30;
+    public int smoothing = 20;
     
     /** Use toggle mode instead of hold mode */
     public boolean toggleMode = false;

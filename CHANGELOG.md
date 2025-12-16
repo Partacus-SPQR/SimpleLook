@@ -2,7 +2,7 @@
 
 All notable changes to SimpleLook will be documented in this file.
 
-## [1.0.0] - 2025-01-01
+## [1.0.0] - 2025-12-16
 
 ### Added
 - Initial release
@@ -12,14 +12,20 @@ All notable changes to SimpleLook will be documented in this file.
 - Configurable maximum yaw angle (10-180 degrees)
 - Configurable maximum pitch angle (10-90 degrees)
 - Configurable return speed (1-100%)
-- Configurable smoothing factor (0-100%)
+- Configurable smoothing factor (0-100%, lower = faster turning)
 - Toggle mode option (press once to activate/deactivate)
 - Keybind is unbound by default (recommended: Left Alt)
 - Keybind visible in Options > Controls > Key Binds > SimpleLook category
 - Full Mod Menu integration
-- Cloth Config support for enhanced configuration UI
+- Cloth Config support for enhanced configuration UI (uses text fields due to Cloth Config slider bug)
 - Fallback configuration screen when Cloth Config is not available
 - Keybindings tab in configuration screen for quick rebinding
+
+### Supported Activities
+- Walking, running, sprinting
+- Swimming and underwater movement
+- Flying with elytra
+- Riding mounts (horses, pigs, striders, happy ghasts, and all other rideable entities)
 
 ### Technical
 - Multi-version support (1.21.9, 1.21.10, 1.21.11)

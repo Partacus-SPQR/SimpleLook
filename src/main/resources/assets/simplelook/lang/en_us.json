@@ -23,7 +23,7 @@
     "config.simplelook.returnSpeed.tooltip": "How fast the camera returns to center when you release the key. Higher = faster (1-100).",
     
     "config.simplelook.smoothing": "Camera Smoothing",
-    "config.simplelook.smoothing.tooltip": "How smooth the camera movement feels. Higher = smoother but slower response (0-100).",
+    "config.simplelook.smoothing.tooltip": "How smooth the camera movement feels. Lower values = faster turning. Higher values = smoother but slower response (0-100).",
     
     "config.simplelook.toggleMode": "Toggle Mode",
     "config.simplelook.toggleMode.tooltip": "If enabled, press once to activate free look, press again to deactivate. If disabled, hold the key.",
