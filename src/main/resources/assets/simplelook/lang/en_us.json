@@ -1,0 +1,33 @@
+{
+    "item.simplelook.name": "SimpleLook",
+    
+    "category.simplelook.category": "SimpleLook",
+    "key.category.simplelook.category": "SimpleLook",
+    "key.simplelook.freelook": "Free Look",
+    "key.simplelook.config": "Open Config Screen",
+    
+    "config.simplelook.title": "SimpleLook Configuration",
+    "config.simplelook.general": "General Settings",
+    "config.simplelook.keybinds": "Keybindings",
+    
+    "config.simplelook.enabled": "Enable Free Look",
+    "config.simplelook.enabled.tooltip": "Enable or disable the free look feature",
+    
+    "config.simplelook.maxYaw": "Maximum Yaw Angle",
+    "config.simplelook.maxYaw.tooltip": "Maximum horizontal angle you can look (in degrees). Set to 180 for full range.",
+    
+    "config.simplelook.maxPitch": "Maximum Pitch Angle",
+    "config.simplelook.maxPitch.tooltip": "Maximum vertical angle you can look up/down (in degrees).",
+    
+    "config.simplelook.returnSpeed": "Return Speed",
+    "config.simplelook.returnSpeed.tooltip": "How fast the camera returns to center when you release the key. Higher = faster (1-100).",
+    
+    "config.simplelook.smoothing": "Camera Smoothing",
+    "config.simplelook.smoothing.tooltip": "How smooth the camera movement feels. Higher = smoother but slower response (0-100).",
+    
+    "config.simplelook.toggleMode": "Toggle Mode",
+    "config.simplelook.toggleMode.tooltip": "If enabled, press once to activate free look, press again to deactivate. If disabled, hold the key.",
+    
+    "simplelook.freelook.enabled": "§aFree Look Enabled",
+    "simplelook.freelook.disabled": "§cFree Look Disabled"
+}

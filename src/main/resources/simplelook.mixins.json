@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "com.simplelook.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "CameraMixin",
+        "MouseMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

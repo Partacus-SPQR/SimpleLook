@@ -1,0 +1,30 @@
+{
+    "schemaVersion": 1,
+    "id": "${id}",
+    "version": "${version}",
+    "name": "${name}",
+    "description": "Look around freely while moving - like Rust's head tilt feature. Hold a key to glance around without changing your movement direction.",
+    "authors": ["Partacus-SPQR"],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/simplelook",
+        "sources": "https://github.com/Partacus-SPQR/SimpleLook"
+    },
+    "license": "MIT",
+    "icon": "assets/simplelook/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": ["com.simplelook.SimpleLookClient"],
+        "modmenu": ["com.simplelook.config.ModMenuIntegration"]
+    },
+    "mixins": ["simplelook.mixins.json"],
+    "depends": {
+        "fabricloader": ">=0.18.2",
+        "fabric-api": "*",
+        "minecraft": "${minecraft}",
+        "java": ">=21"
+    },
+    "recommends": {
+        "cloth-config": "*",
+        "modmenu": "*"
+    }
+}
