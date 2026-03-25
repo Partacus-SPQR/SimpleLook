@@ -69,11 +69,12 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 
 ## Version Compatibility
 
-| Minecraft | Mod Version | Fabric Loader |
-|-----------|-------------|---------------|
-| 1.21.11 | 1.0.0 | 0.16.0 or higher |
-| 1.21.10 | 1.0.0 | 0.16.0 or higher |
-| 1.21.9 | 1.0.0 | 0.16.0 or higher |
+| Minecraft | Mod Version | Fabric Loader | Java |
+|-----------|-------------|---------------|------|
+| 26.1 | 1.2.0 | 0.18.4 or higher | Java 25 |
+| 1.21.11 | 1.2.0 | 0.18.4 or higher | Java 21 |
+| 1.21.10 | 1.2.0 | 0.18.4 or higher | Java 21 |
+| 1.21.9 | 1.2.0 | 0.18.4 or higher | Java 21 |
 
 ---
 
