@@ -2,6 +2,30 @@
 
 All notable changes to SimpleLook will be documented in this file.
 
+## [1.2.0] - 2026-03-25
+
+### Added
+- Minecraft 26.1 support
+- Java 25 toolchain support
+- Unobfuscated jar handling for MC 26.1 (no mappings required)
+
+### Changed
+- Updated Gradle wrapper to 9.4.1
+- Updated Fabric Loader to 0.18.4
+- Adapted all source files with Stonecutter conditionals for 26.1 API changes:
+  - `ResourceLocation` → `Identifier`
+  - `GuiGraphics` → `GuiGraphicsExtractor`
+  - `KeyBindingHelper` → `KeyMappingHelper`
+  - `render()` → `extractRenderState()`
+  - Mouse events now use `MouseButtonEvent`
+  - `Camera.setup()` → `Camera.alignWithEntity()`
+- Cloth Config excluded for 26.1 (no compatible version available yet)
+
+### Technical
+- Multi-version support expanded to 1.21.9, 1.21.10, 1.21.11, 26.1
+
+---
+
 ## [1.0.0] - 2025-12-16
 
 ### Added
