@@ -4,32 +4,50 @@ import com.simplelook.config.FallbackConfigScreen;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.util.Identifier;
+//? if >=26.1 {
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.resources.Identifier;
+//?} else {
+/*import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.resources.ResourceLocation;*/
+//?}
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class SimpleLookKeybindings {
     
     // Custom keybind category for SimpleLook
-    private static final KeyBinding.Category SIMPLELOOK_CATEGORY = 
-        new KeyBinding.Category(Identifier.of(SimpleLookClient.MOD_ID, "category"));
+    //? if >=26.1 {
+    private static final KeyMapping.Category SIMPLELOOK_CATEGORY = 
+        new KeyMapping.Category(Identifier.fromNamespaceAndPath(SimpleLookClient.MOD_ID, "category"));
+    //?} else {
+    /*private static final KeyMapping.Category SIMPLELOOK_CATEGORY = 
+        new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(SimpleLookClient.MOD_ID, "category"));*/
+    //?}
     
-    private static KeyBinding freeLookKey;
-    private static KeyBinding configKey;
+    private static KeyMapping freeLookKey;
+    private static KeyMapping configKey;
     
     public static void register() {
         // Free Look key (default: UNBOUND - user must bind it)
-        freeLookKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        //? if >=26.1 {
+        freeLookKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        //?} else {
+        /*freeLookKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(*/
+        //?}
             "key.simplelook.freelook",
             GLFW.GLFW_KEY_UNKNOWN,  // UNBOUND by default
             SIMPLELOOK_CATEGORY
         ));
         
         // Config key (default: UNBOUND - user must bind it)
-        configKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        //? if >=26.1 {
+        configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        //?} else {
+        /*configKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(*/
+        //?}
             "key.simplelook.config",
             GLFW.GLFW_KEY_UNKNOWN,  // UNBOUND by default
             SIMPLELOOK_CATEGORY
@@ -38,8 +56,8 @@ public class SimpleLookKeybindings {
         // Register tick handler for key state
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             // Handle config keybind - only when no screen is open
-            while (configKey.wasPressed()) {
-                if (client.currentScreen == null) {
+            while (configKey.consumeClick()) {
+                if (client.screen == null) {
                     openConfigScreen(client);
                 }
             }
@@ -56,12 +74,12 @@ public class SimpleLookKeybindings {
             }
             
             // Check for key press (for toggle mode)
-            if (freeLookKey.wasPressed()) {
+            if (freeLookKey.consumeClick()) {
                 FreeLookHandler.onKeyPressed();
             }
             
             // Check for key held state (for hold mode)
-            boolean isPressed = freeLookKey.isPressed();
+            boolean isPressed = freeLookKey.isDown();
             if (!config.toggleMode) {
                 FreeLookHandler.updateKeyState(isPressed);
             }
@@ -71,36 +89,35 @@ public class SimpleLookKeybindings {
         });
     }
     
-    // Cache the result of Cloth Config compatibility check
-    private static Boolean clothConfigCompatible = null;
-    
     /**
      * Opens the config screen, using Cloth Config if available, otherwise fallback
      */
-    private static void openConfigScreen(MinecraftClient client) {
+    private static void openConfigScreen(Minecraft client) {
+        //? if <26.1 {
         // Check if Cloth Config is compatible (only check once)
-        if (clothConfigCompatible == null) {
+        /*if (clothConfigCompatible == null) {
             clothConfigCompatible = checkClothConfigCompatibility();
         }
         
         if (clothConfigCompatible) {
             try {
-                client.setScreen(com.simplelook.config.ClothConfigScreen.create(client.currentScreen));
+                client.setScreen(com.simplelook.config.ClothConfigScreen.create(client.screen));
                 return;
             } catch (Throwable e) {
                 // Cloth Config failed at runtime - mark as incompatible for future
                 clothConfigCompatible = false;
                 SimpleLookClient.LOGGER.warn("Cloth Config failed, using fallback: {}", e.getMessage());
             }
-        }
+        }*/
+        //?}
         
         // Use fallback screen
-        client.setScreen(new FallbackConfigScreen(client.currentScreen));
+        client.setScreen(new FallbackConfigScreen(client.screen));
     }
     
-    /**
-     * Checks if Cloth Config is compatible with the current Minecraft version.
-     */
+    //? if <26.1 {
+    /*private static Boolean clothConfigCompatible = null;
+    
     private static boolean checkClothConfigCompatibility() {
         try {
             Class.forName("me.shedaniel.clothconfig2.api.ConfigBuilder");
@@ -111,26 +128,27 @@ public class SimpleLookKeybindings {
             SimpleLookClient.LOGGER.warn("Error checking Cloth Config compatibility: {}", e.getMessage());
             return false;
         }
-    }
+    }*/
+    //?}
     
     /**
      * Check if the free look key is currently being held down
      */
     public static boolean isFreeLookKeyPressed() {
-        return freeLookKey != null && freeLookKey.isPressed();
+        return freeLookKey != null && freeLookKey.isDown();
     }
     
     /**
      * Get the free look keybinding for display purposes
      */
-    public static KeyBinding getFreeLookKey() {
+    public static KeyMapping getFreeLookKey() {
         return freeLookKey;
     }
     
     /**
      * Get the config keybinding for display purposes
      */
-    public static KeyBinding getConfigKey() {
+    public static KeyMapping getConfigKey() {
         return configKey;
     }
 }

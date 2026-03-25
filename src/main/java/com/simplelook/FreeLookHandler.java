@@ -2,8 +2,8 @@ package com.simplelook;
 
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 
 /**
  * Core handler for the free look functionality.
@@ -68,14 +68,14 @@ public class FreeLookHandler {
     }
     
     private static void startFreeLook() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         
         freeLookActive = true;
         
         // Store the current player rotation
-        storedYaw = client.player.getYaw();
-        storedPitch = client.player.getPitch();
+        storedYaw = client.player.getYRot();
+        storedPitch = client.player.getXRot();
         
         // Reset offsets
         yawOffset = 0.0f;
@@ -110,15 +110,15 @@ public class FreeLookHandler {
         if (freeLookActive) {
             // Smooth the offset towards the target
             float smoothFactor = 1.0f - (config.smoothing / 100.0f) * 0.9f;
-            smoothYawOffset = MathHelper.lerp(smoothFactor, smoothYawOffset, yawOffset);
-            smoothPitchOffset = MathHelper.lerp(smoothFactor, smoothPitchOffset, pitchOffset);
+            smoothYawOffset = Mth.lerp(smoothFactor, smoothYawOffset, yawOffset);
+            smoothPitchOffset = Mth.lerp(smoothFactor, smoothPitchOffset, pitchOffset);
         } else {
             // Return to center smoothly
             float returnFactor = config.returnSpeed / 100.0f;
             returnFactor = Math.max(0.05f, returnFactor);  // Minimum return speed
             
-            smoothYawOffset = MathHelper.lerp(returnFactor, smoothYawOffset, 0.0f);
-            smoothPitchOffset = MathHelper.lerp(returnFactor, smoothPitchOffset, 0.0f);
+            smoothYawOffset = Mth.lerp(returnFactor, smoothYawOffset, 0.0f);
+            smoothPitchOffset = Mth.lerp(returnFactor, smoothPitchOffset, 0.0f);
             
             yawOffset = smoothYawOffset;
             pitchOffset = smoothPitchOffset;
@@ -150,22 +150,22 @@ public class FreeLookHandler {
         pitchOffset += pitchDelta;
         
         // Clamp to configured limits
-        yawOffset = MathHelper.clamp(yawOffset, -config.maxYaw, config.maxYaw);
-        pitchOffset = MathHelper.clamp(pitchOffset, -config.maxPitch, config.maxPitch);
+        yawOffset = Mth.clamp(yawOffset, -config.maxYaw, config.maxYaw);
+        pitchOffset = Mth.clamp(pitchOffset, -config.maxPitch, config.maxPitch);
     }
     
     /**
      * Get the interpolated yaw offset for rendering
      */
     public static float getYawOffset(float tickDelta) {
-        return MathHelper.lerp(tickDelta, prevYawOffset, smoothYawOffset);
+        return Mth.lerp(tickDelta, prevYawOffset, smoothYawOffset);
     }
     
     /**
      * Get the interpolated pitch offset for rendering
      */
     public static float getPitchOffset(float tickDelta) {
-        return MathHelper.lerp(tickDelta, prevPitchOffset, smoothPitchOffset);
+        return Mth.lerp(tickDelta, prevPitchOffset, smoothPitchOffset);
     }
     
     /**

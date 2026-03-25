@@ -8,25 +8,42 @@ base.archivesName = property("mod.id") as String
 repositories {
     maven("https://maven.shedaniel.me/") { name = "Shedaniel" }
     maven("https://maven.terraformersmc.com/releases/") { name = "TerraformersMC" }
+    maven("https://maven.nucleoid.xyz/") { name = "Nucleoid" }
 }
+
+val isUnobfuscated = stonecutter.current.version == "26.1"
+
+// When disableObfuscation=true, Loom doesn't register mod* configurations or remap tasks.
+// Use standard Gradle configurations for unobfuscated versions.
+val modImpl = if (isUnobfuscated) "implementation" else "modImplementation"
+val modRunOnly = if (isUnobfuscated) "runtimeOnly" else "modRuntimeOnly"
+val modCompOnly = if (isUnobfuscated) "compileOnly" else "modCompileOnly"
 
 dependencies {
     minecraft("com.mojang:minecraft:${stonecutter.current.version}")
-    mappings("net.fabricmc:yarn:${property("deps.yarn")}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    if (!isUnobfuscated) {
+        add("mappings", loom.officialMojangMappings())
+    }
+    add(modImpl, "net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    add(modImpl, "net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
     
     // Optional dependencies - Cloth Config
-    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${property("deps.cloth_config")}") {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
-    modRuntimeOnly("me.shedaniel.cloth:cloth-config-fabric:${property("deps.cloth_config")}") {
-        exclude(group = "net.fabricmc.fabric-api")
+    val clothConfigVersion = findProperty("deps.cloth_config") as String?
+    if (clothConfigVersion != null) {
+        add(modCompOnly, dependencies.create("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion").also {
+            (it as org.gradle.api.artifacts.ExternalModuleDependency).exclude(group = "net.fabricmc.fabric-api")
+        })
+        add(modRunOnly, dependencies.create("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion").also {
+            (it as org.gradle.api.artifacts.ExternalModuleDependency).exclude(group = "net.fabricmc.fabric-api")
+        })
     }
     
     // Optional dependencies - ModMenu
-    modRuntimeOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-    modCompileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    val modmenuVersion = findProperty("deps.modmenu") as String?
+    if (modmenuVersion != null) {
+        add(modRunOnly, "com.terraformersmc:modmenu:$modmenuVersion")
+        add(modCompOnly, "com.terraformersmc:modmenu:$modmenuVersion")
+    }
 }
 
 loom {
@@ -37,10 +54,12 @@ loom {
     }
 }
 
+val javaVersion = if (isUnobfuscated) JavaVersion.VERSION_25 else JavaVersion.VERSION_21
+
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }
 
 tasks {
@@ -68,12 +87,18 @@ tasks {
 
     register<Copy>("buildAndCollect") {
         group = "build"
-        from(remapJar.map { it.archiveFile }, remapSourcesJar.map { it.archiveFile })
+        if (isUnobfuscated) {
+            from(named<Jar>("jar").map { it.archiveFile })
+            from(named<Jar>("sourcesJar").map { it.archiveFile })
+        } else {
+            from(named("remapJar").map { (it as Jar).archiveFile })
+            from(named("remapSourcesJar").map { (it as Jar).archiveFile })
+        }
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
     }
     
     compileJava {
-        options.release = 21
+        options.release = if (isUnobfuscated) 25 else 21
     }
 }

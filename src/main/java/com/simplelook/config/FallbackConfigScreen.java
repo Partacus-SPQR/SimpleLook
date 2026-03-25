@@ -3,14 +3,19 @@ package com.simplelook.config;
 import com.simplelook.SimpleLookClient;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.KeybindsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.Text;
+//? if >=26.1 {
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+//?} else {
+/*import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.options.KeyBindsScreen;*/
+//?}
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +47,17 @@ public class FallbackConfigScreen extends Screen {
     private final List<TooltipEntry> tooltips = new ArrayList<>();
     
     // Widget tracking
-    private record WidgetEntry(ClickableWidget widget, int originalY) {}
+    private record WidgetEntry(AbstractWidget widget, int originalY) {}
     private final List<WidgetEntry> scrollableWidgets = new ArrayList<>();
-    private final List<ClickableWidget> footerButtons = new ArrayList<>();
+    private final List<AbstractWidget> footerButtons = new ArrayList<>();
     
     // Sliders for reset functionality
     private IntSlider maxYawSlider;
     private IntSlider maxPitchSlider;
     private IntSlider returnSpeedSlider;
     private IntSlider smoothingSlider;
-    private ButtonWidget enabledButton;
-    private ButtonWidget toggleModeButton;
+    private Button enabledButton;
+    private Button toggleModeButton;
     
     // Track original values for cancel
     private boolean originalEnabled;
@@ -63,7 +68,7 @@ public class FallbackConfigScreen extends Screen {
     private boolean originalToggleMode;
     
     public FallbackConfigScreen(Screen parent) {
-        super(Text.translatable("config.simplelook.title"));
+        super(Component.translatable("config.simplelook.title"));
         this.parent = parent;
         this.config = SimpleLookClient.getInstance().getConfig();
         
@@ -89,27 +94,27 @@ public class FallbackConfigScreen extends Screen {
         
         // === ENABLED TOGGLE ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Enable or disable the free look feature. Default: ON");
-        enabledButton = ButtonWidget.builder(
-            Text.literal("Enabled: " + (config.enabled ? "ON" : "OFF")),
+        enabledButton = Button.builder(
+            Component.literal("Enabled: " + (config.enabled ? "ON" : "OFF")),
             button -> {
                 config.enabled = !config.enabled;
-                button.setMessage(Text.literal("Enabled: " + (config.enabled ? "ON" : "OFF")));
+                button.setMessage(Component.literal("Enabled: " + (config.enabled ? "ON" : "OFF")));
             }
-        ).dimensions(widgetX, y, WIDGET_WIDTH, 20).build();
+        ).bounds(widgetX, y, WIDGET_WIDTH, 20).build();
         addScrollableWidget(enabledButton, y);
         
         // Reset button for enabled
-        ButtonWidget enabledReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button enabledReset = Button.builder(Component.literal("↺"), button -> {
             config.enabled = true;
-            enabledButton.setMessage(Text.literal("Enabled: ON"));
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+            enabledButton.setMessage(Component.literal("Enabled: ON"));
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(enabledReset, y);
         y += ROW_HEIGHT;
         
         // === MAX YAW SLIDER ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Maximum horizontal look angle (10-180°). Default: 135°");
         maxYawSlider = new IntSlider(widgetX, y, WIDGET_WIDTH, 20,
-            Text.literal("Max Yaw: " + (int)config.maxYaw + "°"),
+            Component.literal("Max Yaw: " + (int)config.maxYaw + "°"),
             (int)config.maxYaw, 10, 180) {
             @Override
             protected void applyValue() {
@@ -119,17 +124,17 @@ public class FallbackConfigScreen extends Screen {
         addScrollableWidget(maxYawSlider, y);
         
         // Reset button for maxYaw
-        ButtonWidget maxYawReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button maxYawReset = Button.builder(Component.literal("↺"), button -> {
             maxYawSlider.setValue(135, 10, 180);
             config.maxYaw = 135;
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(maxYawReset, y);
         y += ROW_HEIGHT;
         
         // === MAX PITCH SLIDER ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Maximum vertical look angle (10-90°). Default: 90°");
         maxPitchSlider = new IntSlider(widgetX, y, WIDGET_WIDTH, 20,
-            Text.literal("Max Pitch: " + (int)config.maxPitch + "°"),
+            Component.literal("Max Pitch: " + (int)config.maxPitch + "°"),
             (int)config.maxPitch, 10, 90) {
             @Override
             protected void applyValue() {
@@ -139,17 +144,17 @@ public class FallbackConfigScreen extends Screen {
         addScrollableWidget(maxPitchSlider, y);
         
         // Reset button for maxPitch
-        ButtonWidget maxPitchReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button maxPitchReset = Button.builder(Component.literal("↺"), button -> {
             maxPitchSlider.setValue(90, 10, 90);
             config.maxPitch = 90;
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(maxPitchReset, y);
         y += ROW_HEIGHT;
         
         // === RETURN SPEED SLIDER ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "How fast camera returns to center (1-100%). Default: 25%");
         returnSpeedSlider = new IntSlider(widgetX, y, WIDGET_WIDTH, 20,
-            Text.literal("Return Speed: " + config.returnSpeed + "%"),
+            Component.literal("Return Speed: " + config.returnSpeed + "%"),
             config.returnSpeed, 1, 100) {
             @Override
             protected void applyValue() {
@@ -159,17 +164,17 @@ public class FallbackConfigScreen extends Screen {
         addScrollableWidget(returnSpeedSlider, y);
         
         // Reset button for returnSpeed
-        ButtonWidget returnSpeedReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button returnSpeedReset = Button.builder(Component.literal("↺"), button -> {
             returnSpeedSlider.setValue(25, 1, 100);
             config.returnSpeed = 25;
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(returnSpeedReset, y);
         y += ROW_HEIGHT;
         
         // === SMOOTHING SLIDER ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Camera smoothing amount (0-100%). Default: 30%");
         smoothingSlider = new IntSlider(widgetX, y, WIDGET_WIDTH, 20,
-            Text.literal("Smoothing: " + config.smoothing + "%"),
+            Component.literal("Smoothing: " + config.smoothing + "%"),
             config.smoothing, 0, 100) {
             @Override
             protected void applyValue() {
@@ -179,29 +184,29 @@ public class FallbackConfigScreen extends Screen {
         addScrollableWidget(smoothingSlider, y);
         
         // Reset button for smoothing
-        ButtonWidget smoothingReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button smoothingReset = Button.builder(Component.literal("↺"), button -> {
             smoothingSlider.setValue(30, 0, 100);
             config.smoothing = 30;
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(smoothingReset, y);
         y += ROW_HEIGHT;
         
         // === TOGGLE MODE ===
         addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Toggle: press to activate/deactivate. Hold: hold key to look. Default: OFF (Hold)");
-        toggleModeButton = ButtonWidget.builder(
-            Text.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")),
+        toggleModeButton = Button.builder(
+            Component.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")),
             button -> {
                 config.toggleMode = !config.toggleMode;
-                button.setMessage(Text.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")));
+                button.setMessage(Component.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")));
             }
-        ).dimensions(widgetX, y, WIDGET_WIDTH, 20).build();
+        ).bounds(widgetX, y, WIDGET_WIDTH, 20).build();
         addScrollableWidget(toggleModeButton, y);
         
         // Reset button for toggleMode
-        ButtonWidget toggleModeReset = ButtonWidget.builder(Text.literal("↺"), button -> {
+        Button toggleModeReset = Button.builder(Component.literal("↺"), button -> {
             config.toggleMode = false;
-            toggleModeButton.setMessage(Text.literal("Toggle Mode: OFF"));
-        }).dimensions(resetX, y, RESET_BTN_WIDTH, 20).build();
+            toggleModeButton.setMessage(Component.literal("Toggle Mode: OFF"));
+        }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(toggleModeReset, y);
         y += ROW_HEIGHT;
         
@@ -218,22 +223,22 @@ public class FallbackConfigScreen extends Screen {
         int footerStartX = centerX - totalButtonsWidth / 2;
         
         // Save & Close button
-        ButtonWidget saveButton = ButtonWidget.builder(Text.literal("Save & Close"), button -> {
+        Button saveButton = Button.builder(Component.literal("Save & Close"), button -> {
             config.save();
-            this.client.setScreen(parent);
-        }).dimensions(footerStartX, footerY, buttonWidth, 20).build();
+            this.minecraft.setScreen(parent);
+        }).bounds(footerStartX, footerY, buttonWidth, 20).build();
         footerButtons.add(saveButton);
-        addDrawableChild(saveButton);
+        addRenderableWidget(saveButton);
         
         // Key Binds button
-        ButtonWidget keyBindsButton = ButtonWidget.builder(Text.literal("Key Binds"), button -> {
-            this.client.setScreen(new KeybindsScreen(this, this.client.options));
-        }).dimensions(footerStartX + buttonWidth + buttonSpacing, footerY, buttonWidth, 20).build();
+        Button keyBindsButton = Button.builder(Component.literal("Key Binds"), button -> {
+            this.minecraft.setScreen(new KeyBindsScreen(this, this.minecraft.options));
+        }).bounds(footerStartX + buttonWidth + buttonSpacing, footerY, buttonWidth, 20).build();
         footerButtons.add(keyBindsButton);
-        addDrawableChild(keyBindsButton);
+        addRenderableWidget(keyBindsButton);
         
         // Cancel button
-        ButtonWidget cancelButton = ButtonWidget.builder(Text.literal("Cancel"), button -> {
+        Button cancelButton = Button.builder(Component.literal("Cancel"), button -> {
             // Restore original values
             config.enabled = originalEnabled;
             config.maxYaw = originalMaxYaw;
@@ -241,76 +246,111 @@ public class FallbackConfigScreen extends Screen {
             config.returnSpeed = originalReturnSpeed;
             config.smoothing = originalSmoothing;
             config.toggleMode = originalToggleMode;
-            this.client.setScreen(parent);
-        }).dimensions(footerStartX + (buttonWidth + buttonSpacing) * 2, footerY, buttonWidth, 20).build();
+            this.minecraft.setScreen(parent);
+        }).bounds(footerStartX + (buttonWidth + buttonSpacing) * 2, footerY, buttonWidth, 20).build();
         footerButtons.add(cancelButton);
-        addDrawableChild(cancelButton);
+        addRenderableWidget(cancelButton);
     }
     
-    private void addScrollableWidget(ClickableWidget widget, int originalY) {
+    private void addScrollableWidget(AbstractWidget widget, int originalY) {
         scrollableWidgets.add(new WidgetEntry(widget, originalY));
-        addDrawableChild(widget);
+        addRenderableWidget(widget);
     }
     
     private void addTooltip(int x, int y, int width, int height, String tooltip) {
         tooltips.add(new TooltipEntry(x, y, width, height, tooltip));
     }
     
+    //? if >=26.1 {
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // Render dark background - use fillGradient for compatibility
-        context.fillGradient(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
+        guiGraphics.fillGradient(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
         
-        // Update widget positions based on scroll
         for (WidgetEntry entry : scrollableWidgets) {
             entry.widget.setY(entry.originalY - scrollOffset);
         }
         
-        // Render title (fixed header)
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, 
-            this.width / 2, 15, 0xFFFFFF);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
         
-        // Enable scissoring for scrollable content area
         int scrollableTop = HEADER_HEIGHT;
         int scrollableBottom = this.height - FOOTER_HEIGHT;
-        context.enableScissor(0, scrollableTop, this.width, scrollableBottom);
+        guiGraphics.enableScissor(0, scrollableTop, this.width, scrollableBottom);
         
-        // Render scrollable widgets
         for (WidgetEntry entry : scrollableWidgets) {
-            entry.widget.render(context, mouseX, mouseY, delta);
+            entry.widget.extractRenderState(guiGraphics, mouseX, mouseY, delta);
         }
         
-        context.disableScissor();
+        guiGraphics.disableScissor();
         
-        // Render scrollbar if needed
         if (maxScrollOffset > 0) {
-            renderScrollbar(context);
+            renderScrollbar(guiGraphics);
         }
         
-        // Render footer buttons (outside scissor region)
-        for (ClickableWidget button : footerButtons) {
-            button.render(context, mouseX, mouseY, delta);
+        for (AbstractWidget button : footerButtons) {
+            button.extractRenderState(guiGraphics, mouseX, mouseY, delta);
         }
         
-        // Render tooltips (after everything else, outside scissor)
         for (TooltipEntry entry : tooltips) {
             int adjustedY = entry.y - scrollOffset;
             if (adjustedY >= HEADER_HEIGHT && adjustedY + entry.height <= this.height - FOOTER_HEIGHT) {
                 if (mouseX >= entry.x && mouseX <= entry.x + entry.width &&
                     mouseY >= adjustedY && mouseY <= adjustedY + entry.height) {
-                    context.drawTooltip(this.textRenderer, Text.literal(entry.tooltip), mouseX, mouseY);
+                    guiGraphics.setTooltipForNextFrame(this.font, Component.literal(entry.tooltip), mouseX, mouseY);
                 }
             }
         }
     }
     
-    private void renderScrollbar(DrawContext context) {
+    private void renderScrollbar(GuiGraphicsExtractor guiGraphics) {
+    //?} else {
+    /*@Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        guiGraphics.fillGradient(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
+        
+        for (WidgetEntry entry : scrollableWidgets) {
+            entry.widget.setY(entry.originalY - scrollOffset);
+        }
+        
+        guiGraphics.drawCenteredString(this.font, this.title, 
+            this.width / 2, 15, 0xFFFFFF);
+        
+        int scrollableTop = HEADER_HEIGHT;
+        int scrollableBottom = this.height - FOOTER_HEIGHT;
+        guiGraphics.enableScissor(0, scrollableTop, this.width, scrollableBottom);
+        
+        for (WidgetEntry entry : scrollableWidgets) {
+            entry.widget.render(guiGraphics, mouseX, mouseY, delta);
+        }
+        
+        guiGraphics.disableScissor();
+        
+        if (maxScrollOffset > 0) {
+            renderScrollbar(guiGraphics);
+        }
+        
+        for (AbstractWidget button : footerButtons) {
+            button.render(guiGraphics, mouseX, mouseY, delta);
+        }
+        
+        for (TooltipEntry entry : tooltips) {
+            int adjustedY = entry.y - scrollOffset;
+            if (adjustedY >= HEADER_HEIGHT && adjustedY + entry.height <= this.height - FOOTER_HEIGHT) {
+                if (mouseX >= entry.x && mouseX <= entry.x + entry.width &&
+                    mouseY >= adjustedY && mouseY <= adjustedY + entry.height) {
+                    guiGraphics.renderTooltip(this.font, Component.literal(entry.tooltip), mouseX, mouseY);
+                }
+            }
+        }
+    }
+    
+    private void renderScrollbar(GuiGraphics guiGraphics) {*/
+    //?}
         int scrollableHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
         int scrollbarX = this.width - SCROLLBAR_WIDTH - 4;
         int scrollbarY = HEADER_HEIGHT;
         
         // Background track
-        context.fill(scrollbarX, scrollbarY, scrollbarX + SCROLLBAR_WIDTH, scrollbarY + scrollableHeight, 0x40FFFFFF);
+        guiGraphics.fill(scrollbarX, scrollbarY, scrollbarX + SCROLLBAR_WIDTH, scrollbarY + scrollableHeight, 0x40FFFFFF);
         
         // Calculate thumb size and position
         float visibleRatio = (float) scrollableHeight / contentHeight;
@@ -320,7 +360,7 @@ public class FallbackConfigScreen extends Screen {
         
         // Thumb
         int thumbColor = isDraggingScrollbar ? 0xFFCCCCCC : 0xFFAAAAAA;
-        context.fill(scrollbarX, thumbY, scrollbarX + SCROLLBAR_WIDTH, thumbY + thumbHeight, thumbColor);
+        guiGraphics.fill(scrollbarX, thumbY, scrollbarX + SCROLLBAR_WIDTH, thumbY + thumbHeight, thumbColor);
     }
     
     @Override
@@ -330,13 +370,12 @@ public class FallbackConfigScreen extends Screen {
         return true;
     }
     
+    //? if >=26.1 {
     @Override
-    public boolean mouseClicked(Click click, boolean fromElement) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-        
-        // Check scrollbar click
+    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (maxScrollOffset > 0 && button == 0) {
             int scrollbarX = this.width - SCROLLBAR_WIDTH - 4;
             int scrollableHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
@@ -344,18 +383,15 @@ public class FallbackConfigScreen extends Screen {
             if (mouseX >= scrollbarX && mouseX <= scrollbarX + SCROLLBAR_WIDTH &&
                 mouseY >= HEADER_HEIGHT && mouseY <= this.height - FOOTER_HEIGHT) {
                 
-                // Calculate thumb position
                 float visibleRatio = (float) scrollableHeight / contentHeight;
                 int thumbHeight = Math.max(20, (int) (scrollableHeight * visibleRatio));
                 float scrollRatio = (float) scrollOffset / maxScrollOffset;
                 int thumbY = HEADER_HEIGHT + (int) ((scrollableHeight - thumbHeight) * scrollRatio);
                 
                 if (mouseY >= thumbY && mouseY <= thumbY + thumbHeight) {
-                    // Clicked on thumb - start dragging
                     isDraggingScrollbar = true;
                     scrollbarDragOffset = (int) mouseY - thumbY;
                 } else {
-                    // Clicked on track - jump to position
                     float clickRatio = (float) (mouseY - HEADER_HEIGHT - thumbHeight / 2) / (scrollableHeight - thumbHeight);
                     scrollOffset = (int) (clickRatio * maxScrollOffset);
                     scrollOffset = Math.max(0, Math.min(scrollOffset, maxScrollOffset));
@@ -364,22 +400,22 @@ public class FallbackConfigScreen extends Screen {
             }
         }
         
-        return super.mouseClicked(click, fromElement);
+        return super.mouseClicked(event, bl);
     }
     
     @Override
-    public boolean mouseReleased(Click click) {
-        if (click.button() == 0 && isDraggingScrollbar) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0 && isDraggingScrollbar) {
             isDraggingScrollbar = false;
             return true;
         }
-        return super.mouseReleased(click);
+        return super.mouseReleased(event);
     }
     
     @Override
-    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
         if (isDraggingScrollbar) {
-            double mouseY = click.y();
+            double mouseY = event.y();
             int scrollableHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
             float visibleRatio = (float) scrollableHeight / contentHeight;
             int thumbHeight = Math.max(20, (int) (scrollableHeight * visibleRatio));
@@ -389,27 +425,81 @@ public class FallbackConfigScreen extends Screen {
             scrollOffset = Math.max(0, Math.min(scrollOffset, maxScrollOffset));
             return true;
         }
-        return super.mouseDragged(click, deltaX, deltaY);
+        return super.mouseDragged(event, deltaX, deltaY);
+    }
+    //?} else {
+    /*@Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (maxScrollOffset > 0 && button == 0) {
+            int scrollbarX = this.width - SCROLLBAR_WIDTH - 4;
+            int scrollableHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
+            
+            if (mouseX >= scrollbarX && mouseX <= scrollbarX + SCROLLBAR_WIDTH &&
+                mouseY >= HEADER_HEIGHT && mouseY <= this.height - FOOTER_HEIGHT) {
+                
+                float visibleRatio = (float) scrollableHeight / contentHeight;
+                int thumbHeight = Math.max(20, (int) (scrollableHeight * visibleRatio));
+                float scrollRatio = (float) scrollOffset / maxScrollOffset;
+                int thumbY = HEADER_HEIGHT + (int) ((scrollableHeight - thumbHeight) * scrollRatio);
+                
+                if (mouseY >= thumbY && mouseY <= thumbY + thumbHeight) {
+                    isDraggingScrollbar = true;
+                    scrollbarDragOffset = (int) mouseY - thumbY;
+                } else {
+                    float clickRatio = (float) (mouseY - HEADER_HEIGHT - thumbHeight / 2) / (scrollableHeight - thumbHeight);
+                    scrollOffset = (int) (clickRatio * maxScrollOffset);
+                    scrollOffset = Math.max(0, Math.min(scrollOffset, maxScrollOffset));
+                }
+                return true;
+            }
+        }
+        
+        return super.mouseClicked(mouseX, mouseY, button);
     }
     
     @Override
-    public void close() {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && isDraggingScrollbar) {
+            isDraggingScrollbar = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+    
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (isDraggingScrollbar) {
+            int scrollableHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT;
+            float visibleRatio = (float) scrollableHeight / contentHeight;
+            int thumbHeight = Math.max(20, (int) (scrollableHeight * visibleRatio));
+            
+            float dragRatio = (float) (mouseY - HEADER_HEIGHT - scrollbarDragOffset) / (scrollableHeight - thumbHeight);
+            scrollOffset = (int) (dragRatio * maxScrollOffset);
+            scrollOffset = Math.max(0, Math.min(scrollOffset, maxScrollOffset));
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }*/
+    //?}
+    
+    @Override
+    public void onClose() {
         // Save on close (same as Save & Close)
         config.save();
-        this.client.setScreen(parent);
+        this.minecraft.setScreen(parent);
     }
     
     /**
      * Custom integer slider widget for vanilla Minecraft GUIs.
      * Handles conversion between slider's 0.0-1.0 normalized value and integer range.
      */
-    private abstract static class IntSlider extends SliderWidget {
+    private abstract static class IntSlider extends AbstractSliderButton {
         private final int min;
         private final int max;
         private final String labelPrefix;
         private final String labelSuffix;
         
-        public IntSlider(int x, int y, int width, int height, Text message, int value, int min, int max) {
+        public IntSlider(int x, int y, int width, int height, Component message, int value, int min, int max) {
             super(x, y, width, height, message, normalize(value, min, max));
             this.min = min;
             this.max = max;
@@ -449,7 +539,7 @@ public class FallbackConfigScreen extends Screen {
         
         @Override
         protected void updateMessage() {
-            setMessage(Text.literal(labelPrefix + getIntValue() + labelSuffix));
+            setMessage(Component.literal(labelPrefix + getIntValue() + labelSuffix));
         }
         
         @Override

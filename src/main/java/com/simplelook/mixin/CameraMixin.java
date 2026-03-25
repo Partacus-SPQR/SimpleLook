@@ -2,43 +2,42 @@ package com.simplelook.mixin;
 
 import com.simplelook.FreeLookHandler;
 import com.simplelook.SimpleLookClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.entity.Entity;
-//? if >=1.21.11
-import net.minecraft.world.World;
+import net.minecraft.client.Camera;
+//? if <26.1 {
+/*import net.minecraft.world.entity.Entity;*/
+//?}
+//? if >=1.21.11 && <26.1
+import net.minecraft.world.level.Level;
 //? if <1.21.11
-/*import net.minecraft.world.BlockView;*/
+/*import net.minecraft.world.level.BlockGetter;*/
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Mixin to modify the camera rotation for free look functionality.
- * This allows the camera to rotate independently of the player's body.
- */
 @Mixin(Camera.class)
 public abstract class CameraMixin {
     
     @Shadow
-    private float yaw;
+    private float yRot;
     
     @Shadow
-    private float pitch;
+    private float xRot;
     
     @Shadow
-    protected abstract void setRotation(float yaw, float pitch);
+    protected abstract void setRotation(float yRot, float xRot);
     
-    /**
-     * Inject at the end of the update method to apply free look offset
-     */
-    @Inject(method = "update", at = @At("RETURN"))
-    //? if >=1.21.11 {
-    private void onCameraUpdate(World area, Entity focusedEntity, boolean thirdPerson, 
-                                 boolean inverseView, float tickDelta, CallbackInfo ci) {
+    //? if >=26.1 {
+    @Inject(method = "alignWithEntity", at = @At("RETURN"))
+    private void onCameraUpdate(float tickDelta, CallbackInfo ci) {
+    //?} elif >=1.21.11 {
+    /*@Inject(method = "setup", at = @At("RETURN"))
+    private void onCameraUpdate(Level area, Entity focusedEntity, boolean thirdPerson, 
+                                 boolean inverseView, float tickDelta, CallbackInfo ci) {*/
     //?} else {
-    /*private void onCameraUpdate(BlockView area, Entity focusedEntity, boolean thirdPerson, 
+    /*@Inject(method = "setup", at = @At("RETURN"))
+    private void onCameraUpdate(BlockGetter area, Entity focusedEntity, boolean thirdPerson, 
                                  boolean inverseView, float tickDelta, CallbackInfo ci) {*/
     //?}
         // Check if mod is enabled
@@ -57,8 +56,8 @@ public abstract class CameraMixin {
         float pitchOffset = FreeLookHandler.getPitchOffset(tickDelta);
         
         // Apply the offset to the camera rotation
-        float newYaw = this.yaw + yawOffset;
-        float newPitch = this.pitch + pitchOffset;
+        float newYaw = this.yRot + yawOffset;
+        float newPitch = this.xRot + pitchOffset;
         
         // Clamp pitch to prevent flipping
         newPitch = Math.max(-90.0f, Math.min(90.0f, newPitch));
