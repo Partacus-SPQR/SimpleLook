@@ -6,20 +6,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 //? if >=26.1 {
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+//?} else {
+/*import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;*/
+//?}
+//? if >=1.21.11 {
 import net.minecraft.resources.Identifier;
 //?} else {
-/*import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.resources.ResourceLocation;*/
+/*import net.minecraft.resources.ResourceLocation;*/
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
+import com.simplelook.compat.ScreenCompat;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class SimpleLookKeybindings {
     
     // Custom keybind category for SimpleLook
-    //? if >=26.1 {
+    //? if >=1.21.11 {
     private static final KeyMapping.Category SIMPLELOOK_CATEGORY = 
         new KeyMapping.Category(Identifier.fromNamespaceAndPath(SimpleLookClient.MOD_ID, "category"));
     //?} else {
@@ -57,7 +61,7 @@ public class SimpleLookKeybindings {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             // Handle config keybind - only when no screen is open
             while (configKey.consumeClick()) {
-                if (client.screen == null) {
+                if (ScreenCompat.current(client) == null) {
                     openConfigScreen(client);
                 }
             }
@@ -94,14 +98,14 @@ public class SimpleLookKeybindings {
      */
     private static void openConfigScreen(Minecraft client) {
         //? if <26.1 {
-        // Check if Cloth Config is compatible (only check once)
-        /*if (clothConfigCompatible == null) {
+        /*// Check if Cloth Config is compatible (only check once)
+        if (clothConfigCompatible == null) {
             clothConfigCompatible = checkClothConfigCompatibility();
         }
         
         if (clothConfigCompatible) {
             try {
-                client.setScreen(com.simplelook.config.ClothConfigScreen.create(client.screen));
+                ScreenCompat.open(client, com.simplelook.config.ClothConfigScreen.create(ScreenCompat.current(client)));
                 return;
             } catch (Throwable e) {
                 // Cloth Config failed at runtime - mark as incompatible for future
@@ -112,7 +116,7 @@ public class SimpleLookKeybindings {
         //?}
         
         // Use fallback screen
-        client.setScreen(new FallbackConfigScreen(client.screen));
+        ScreenCompat.open(client, new FallbackConfigScreen(ScreenCompat.current(client)));
     }
     
     //? if <26.1 {

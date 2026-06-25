@@ -1,16 +1,16 @@
 package com.simplelook.config;
 
 import com.simplelook.SimpleLookClient;
+import com.simplelook.compat.ScreenCompat;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 //? if >=26.1 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+//?} else {
+/*import net.minecraft.client.gui.GuiGraphics;*/
+//?}
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.input.MouseButtonEvent;
-//?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.options.KeyBindsScreen;*/
-//?}
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -192,12 +192,12 @@ public class FallbackConfigScreen extends Screen {
         y += ROW_HEIGHT;
         
         // === TOGGLE MODE ===
-        addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Toggle: press to activate/deactivate. Hold: hold key to look. Default: OFF (Hold)");
+        addTooltip(widgetX, y, WIDGET_WIDTH, 20, "Hold: hold the key to look, release to revert. Toggle: press once on, press again off. Default: Hold");
         toggleModeButton = Button.builder(
-            Component.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")),
+            Component.literal("Look Mode: " + (config.toggleMode ? "Toggle" : "Hold")),
             button -> {
                 config.toggleMode = !config.toggleMode;
-                button.setMessage(Component.literal("Toggle Mode: " + (config.toggleMode ? "ON" : "OFF")));
+                button.setMessage(Component.literal("Look Mode: " + (config.toggleMode ? "Toggle" : "Hold")));
             }
         ).bounds(widgetX, y, WIDGET_WIDTH, 20).build();
         addScrollableWidget(toggleModeButton, y);
@@ -205,7 +205,7 @@ public class FallbackConfigScreen extends Screen {
         // Reset button for toggleMode
         Button toggleModeReset = Button.builder(Component.literal("↺"), button -> {
             config.toggleMode = false;
-            toggleModeButton.setMessage(Component.literal("Toggle Mode: OFF"));
+            toggleModeButton.setMessage(Component.literal("Look Mode: Hold"));
         }).bounds(resetX, y, RESET_BTN_WIDTH, 20).build();
         addScrollableWidget(toggleModeReset, y);
         y += ROW_HEIGHT;
@@ -225,14 +225,14 @@ public class FallbackConfigScreen extends Screen {
         // Save & Close button
         Button saveButton = Button.builder(Component.literal("Save & Close"), button -> {
             config.save();
-            this.minecraft.setScreen(parent);
+            ScreenCompat.open(this.minecraft, parent);
         }).bounds(footerStartX, footerY, buttonWidth, 20).build();
         footerButtons.add(saveButton);
         addRenderableWidget(saveButton);
         
         // Key Binds button
         Button keyBindsButton = Button.builder(Component.literal("Key Binds"), button -> {
-            this.minecraft.setScreen(new KeyBindsScreen(this, this.minecraft.options));
+            ScreenCompat.open(this.minecraft, new KeyBindsScreen(this, this.minecraft.options));
         }).bounds(footerStartX + buttonWidth + buttonSpacing, footerY, buttonWidth, 20).build();
         footerButtons.add(keyBindsButton);
         addRenderableWidget(keyBindsButton);
@@ -246,7 +246,7 @@ public class FallbackConfigScreen extends Screen {
             config.returnSpeed = originalReturnSpeed;
             config.smoothing = originalSmoothing;
             config.toggleMode = originalToggleMode;
-            this.minecraft.setScreen(parent);
+            ScreenCompat.open(this.minecraft, parent);
         }).bounds(footerStartX + (buttonWidth + buttonSpacing) * 2, footerY, buttonWidth, 20).build();
         footerButtons.add(cancelButton);
         addRenderableWidget(cancelButton);
@@ -337,7 +337,7 @@ public class FallbackConfigScreen extends Screen {
             if (adjustedY >= HEADER_HEIGHT && adjustedY + entry.height <= this.height - FOOTER_HEIGHT) {
                 if (mouseX >= entry.x && mouseX <= entry.x + entry.width &&
                     mouseY >= adjustedY && mouseY <= adjustedY + entry.height) {
-                    guiGraphics.renderTooltip(this.font, Component.literal(entry.tooltip), mouseX, mouseY);
+                    guiGraphics.setTooltipForNextFrame(this.font, Component.literal(entry.tooltip), mouseX, mouseY);
                 }
             }
         }
@@ -370,7 +370,7 @@ public class FallbackConfigScreen extends Screen {
         return true;
     }
     
-    //? if >=26.1 {
+    //? if >=1.21.9 {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
         double mouseX = event.x();
@@ -486,7 +486,7 @@ public class FallbackConfigScreen extends Screen {
     public void onClose() {
         // Save on close (same as Save & Close)
         config.save();
-        this.minecraft.setScreen(parent);
+        ScreenCompat.open(this.minecraft, parent);
     }
     
     /**

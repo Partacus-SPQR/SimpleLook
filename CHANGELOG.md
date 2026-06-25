@@ -2,6 +2,28 @@
 
 All notable changes to SimpleLook will be documented in this file.
 
+## [1.3.0] - 2026-06-24
+
+### Added
+- Minecraft 26.2 support (unobfuscated builds, Java 25)
+
+### Fixed
+- Restored 1.21.9 / 1.21.10 / 1.21.11 builds, which had regressed in 1.2.0:
+  - `MouseButtonEvent` mouse signatures and `options.controls.KeyBindsScreen` are now applied to all shipped versions (they were wrongly gated to `>=26.1`, leaving the 1.21.x path on pre-1.21.9 APIs)
+  - Fallback config screen used `GuiGraphics.renderTooltip(...)` on 1.21.x → switched to `setTooltipForNextFrame(...)`
+  - `Identifier` import and `KeyMapping.Category` are now gated `>=1.21.11` (were conflated with `KeyMappingHelper` at `>=26.1`)
+
+### Changed
+- 26.2 is now the primary build target; multi-version builds cover 1.21.9, 1.21.10, 1.21.11, 26.1, and 26.2
+- Adapted to the 26.2 screen API change via a new `ScreenCompat` helper:
+  - `Minecraft.setScreen()` → `Minecraft.setScreenAndShow()`
+  - `Minecraft.screen` field → `Minecraft.gui.screen()`
+- Switched the Java config to a toolchain so the 26.x (Java 25) builds no longer depend on the ambient JDK
+- Updated dependencies for 26.2: Fabric API 0.153.0+26.2, Mod Menu 20.0.0-beta.4
+- Clarified the look-mode option in both the Cloth and fallback config screens — the control is now labelled **Hold / Toggle** (the default is **Hold**: hold the key to look, release to revert) instead of an ambiguous on/off
+
+---
+
 ## [1.2.0] - 2026-03-25
 
 ### Added

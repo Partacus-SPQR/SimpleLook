@@ -25,8 +25,8 @@
     "config.simplelook.smoothing": "Camera Smoothing",
     "config.simplelook.smoothing.tooltip": "How smooth the camera movement feels. Lower values = faster turning. Higher values = smoother but slower response (0-100).",
     
-    "config.simplelook.toggleMode": "Toggle Mode",
-    "config.simplelook.toggleMode.tooltip": "If enabled, press once to activate free look, press again to deactivate. If disabled, hold the key.",
+    "config.simplelook.toggleMode": "Toggle Mode (Off = Hold)",
+    "config.simplelook.toggleMode.tooltip": "Off = Hold (hold the key to look, release to revert). On = Toggle (press once to activate, press again to deactivate). Default: Off (Hold).",
     
     "simplelook.freelook.enabled": "§aFree Look Enabled",
     "simplelook.freelook.disabled": "§cFree Look Disabled"

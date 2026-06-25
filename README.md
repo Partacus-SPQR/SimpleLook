@@ -1,9 +1,9 @@
 ﻿# SimpleLook
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.9--26.1-green)](https://minecraft.net)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.9--26.2-green)](https://minecraft.net)
 [![Fabric](https://img.shields.io/badge/Mod%20Loader-Fabric-blue)](https://fabricmc.net)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](https://modrinth.com/project/simplelook)
+[![Version](https://img.shields.io/badge/Version-1.3.0-orange)](https://modrinth.com/project/simplelook)
 
 **Look around freely while moving - inspired by Rust's free look feature.**
 
@@ -53,7 +53,7 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 | **Max Pitch** | 90 degrees | Maximum vertical look angle |
 | **Return Speed** | 25% | How fast the camera returns to center |
 | **Smoothing** | 20% | Camera movement smoothing (lower = faster turning) |
-| **Toggle Mode** | Off | Use toggle instead of hold |
+| **Toggle Mode** | Off (Hold) | Off = hold the key to look (release reverts); On = press once to toggle on/off |
 
 ---
 
@@ -71,10 +71,11 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 
 | Minecraft | Mod Version | Fabric Loader | Java |
 |-----------|-------------|---------------|------|
-| 26.1 | 1.2.0 | 0.18.4 or higher | Java 25 |
-| 1.21.11 | 1.2.0 | 0.18.4 or higher | Java 21 |
-| 1.21.10 | 1.2.0 | 0.18.4 or higher | Java 21 |
-| 1.21.9 | 1.2.0 | 0.18.4 or higher | Java 21 |
+| 26.2 | 1.3.0 | 0.18.4 or higher | Java 25 |
+| 26.1 | 1.3.0 | 0.18.4 or higher | Java 25 |
+| 1.21.11 | 1.3.0 | 0.18.4 or higher | Java 21 |
+| 1.21.10 | 1.3.0 | 0.18.4 or higher | Java 21 |
+| 1.21.9 | 1.3.0 | 0.18.4 or higher | Java 21 |
 
 ---
 

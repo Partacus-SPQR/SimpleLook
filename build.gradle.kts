@@ -11,7 +11,7 @@ repositories {
     maven("https://maven.nucleoid.xyz/") { name = "Nucleoid" }
 }
 
-val isUnobfuscated = stonecutter.current.version == "26.1"
+val isUnobfuscated = stonecutter.current.version.startsWith("26.")
 
 // When disableObfuscation=true, Loom doesn't register mod* configurations or remap tasks.
 // Use standard Gradle configurations for unobfuscated versions.
@@ -54,12 +54,13 @@ loom {
     }
 }
 
-val javaVersion = if (isUnobfuscated) JavaVersion.VERSION_25 else JavaVersion.VERSION_21
+val javaVersion = if (isUnobfuscated) 25 else 21
 
 java {
     withSourcesJar()
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
 }
 
 tasks {
