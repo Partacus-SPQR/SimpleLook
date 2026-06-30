@@ -72,6 +72,7 @@ All settings can be adjusted in-game with Mod Menu (and optionally Cloth Config 
 | Minecraft | Mod Version | Fabric Loader | Java |
 |-----------|-------------|---------------|------|
 | 26.2 | 1.3.0 | 0.18.4 or higher | Java 25 |
+| 26.1.2 | 1.3.0 | 0.18.4 or higher | Java 25 |
 | 26.1 | 1.3.0 | 0.18.4 or higher | Java 25 |
 | 1.21.11 | 1.3.0 | 0.18.4 or higher | Java 21 |
 | 1.21.10 | 1.3.0 | 0.18.4 or higher | Java 21 |
